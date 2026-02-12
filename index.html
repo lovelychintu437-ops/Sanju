@@ -44,7 +44,7 @@ h1{
 .buttons{
   margin-top:30px;
   position:relative;
-  height:80px;
+  height:120px;
 }
 
 button{
@@ -107,43 +107,28 @@ const music = document.getElementById("bgMusic");
 const box = document.getElementById("box");
 
 
-// 🎵 MUSIC (one tap only)
+// 🎵 MUSIC
 document.addEventListener("click", function () {
   music.muted = false;
   music.play();
 }, { once: true });
 
 
-// 😆 NO BUTTON
-const funnyTexts = [
-  "NO 🙈",
-  "Are you sure? 🥺",
-  "Think again 😢",
-  "Please say yes 😭",
-  "I will cry 😭💔"
-];
-
-let hoverCount = 0;
-let speed = 1;
-
+// 😆 NO BUTTON ESCAPE
 no.addEventListener("mouseover", function(){
-
-  no.innerText = funnyTexts[hoverCount % funnyTexts.length];
-  hoverCount++;
-
-  speed += 0.5;
-
-  const x = Math.random() * (box.clientWidth - no.offsetWidth);
-  const y = Math.random() * (box.clientHeight - no.offsetHeight);
-
-  no.style.transition = "all " + (0.3 / speed) + "s ease";
-  no.style.left = x + "px";
-  no.style.top = y + "px";
+  moveInsideBox(no);
 });
 
 
-// ❤️ YES BUTTON (Telugu cute stages)
+// ❤️ YES BUTTON LOGIC + ESCAPE
 let yesClickCount = 0;
+let yesCanRun = true;
+
+yes.addEventListener("mouseover", function(){
+  if(yesCanRun){
+    moveInsideBox(yes);
+  }
+});
 
 yes.addEventListener("click", function(){
 
@@ -156,10 +141,20 @@ yes.addEventListener("click", function(){
     yes.innerText = "Pelli chesukundhama? 🥰";
   }
   else{
+    yesCanRun = false; // stop escaping
     window.location.href = "love.html";
   }
 
 });
+
+
+// 🔁 MOVE FUNCTION
+function moveInsideBox(button){
+  const x = Math.random() * (box.clientWidth - button.offsetWidth);
+  const y = Math.random() * (box.clientHeight - button.offsetHeight);
+  button.style.left = x + "px";
+  button.style.top = y + "px";
+}
 
 
 // 💕 HEART ANIMATION
