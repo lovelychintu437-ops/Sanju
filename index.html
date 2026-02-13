@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Valentine ❤️</title>
+<title>Valentine ❤️ Engagement</title>
 
 <style>
 body{
@@ -26,22 +26,57 @@ body{
 
 .container{
   background:rgba(255,255,255,0.25);
-  backdrop-filter:blur(10px);
+  backdrop-filter:blur(15px);
   padding:40px;
   border-radius:25px;
   text-align:center;
   box-shadow:0 25px 50px rgba(0,0,0,0.3);
-  width:80%;
-  max-width:420px;
+  width:90%;
+  max-width:450px;
+  position:relative;
 }
 
 h1{
   color:white;
-  font-size:2em;
+  font-size:1.9em;
 }
 
+/* 💍 Engagement Area */
+#engagementArea{
+  position:relative;
+  width:100%;
+  height:220px;
+  margin:25px 0;
+  overflow:hidden;
+}
+
+/* Male hand holding ring */
+#maleHand{
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:180px;
+  z-index:1;
+}
+
+/* Female draggable hand */
+#femaleHand{
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%);
+  width:200px;
+  cursor:grab;
+  z-index:2;
+  user-select:none;
+  touch-action:none;
+  transition: transform 0.2s ease;
+}
+
+/* Buttons */
 .buttons{
-  margin-top:30px;
+  margin-top:10px;
   position:relative;
   height:120px;
   width:100%;
@@ -69,6 +104,7 @@ button{
   left:55%;
 }
 
+/* Floating hearts */
 .heart{
   position:absolute;
   font-size:20px;
@@ -92,6 +128,13 @@ button{
 <div class="container">
   <h1>Hey Ammaduu 🥰<br>Will you be my Valentine? 💖</h1>
 
+  <!-- 💍 Engagement Animation -->
+  <div id="engagementArea">
+    <img src="male_hand.png" id="maleHand">
+    <img src="female_hand.png" id="femaleHand">
+  </div>
+
+  <!-- Buttons -->
   <div class="buttons">
     <button id="yes">YES 💘</button>
     <button id="no">NO 🙈</button>
@@ -101,20 +144,22 @@ button{
 <script>
 document.addEventListener("DOMContentLoaded", function(){
 
-const no = document.getElementById("no");
 const yes = document.getElementById("yes");
+const no = document.getElementById("no");
 const music = document.getElementById("bgMusic");
 const buttonsArea = document.querySelector(".buttons");
+const femaleHand = document.getElementById("femaleHand");
+const maleHand = document.getElementById("maleHand");
+const engagementArea = document.getElementById("engagementArea");
 
-
-// 🎵 MUSIC (one tap)
+// 🎵 Play music once
 document.addEventListener("click", function () {
   music.muted = false;
   music.play();
 }, { once: true });
 
 
-// 😆 NO BUTTON FUNNY + ESCAPE
+// 😆 NO button funny escape
 const funnyTexts = [
   "naa bujji kadha 🥺",
   "mama ki chepputha 😡",
@@ -131,7 +176,7 @@ no.addEventListener("mouseover", function(){
 });
 
 
-// ❤️ YES BUTTON ESCAPE UNTIL PELLI
+// ❤️ YES button dramatic steps
 let yesClickCount = 0;
 let yesCanRun = true;
 
@@ -142,11 +187,9 @@ yes.addEventListener("mouseover", function(){
 });
 
 yes.addEventListener("click", function(){
-
   yesClickCount++;
-
   if(yesClickCount === 1){
-    yes.innerText = "love chestunava? 🥹";
+    yes.innerText = "real ga love chestunava? 🥹";
   }
   else if(yesClickCount === 2){
     yes.innerText = "pelli chesukundhama? 🥰";
@@ -155,28 +198,78 @@ yes.addEventListener("click", function(){
     yesCanRun = false;
     window.location.href = "love.html";
   }
-
 });
 
 
-// 🔁 MOVE ONLY INSIDE WHITE BOX
+// Move buttons inside box
 function moveInsideBox(button){
-
-  const areaWidth = buttonsArea.clientWidth;
-  const areaHeight = buttonsArea.clientHeight;
-
-  const btnWidth = button.offsetWidth;
-  const btnHeight = button.offsetHeight;
-
-  const x = Math.random() * (areaWidth - btnWidth);
-  const y = Math.random() * (areaHeight - btnHeight);
-
+  const areaWidth = buttonsArea.clientWidth - button.offsetWidth;
+  const areaHeight = buttonsArea.clientHeight - button.offsetHeight;
+  const x = Math.random()*areaWidth;
+  const y = Math.random()*areaHeight;
   button.style.left = x + "px";
   button.style.top = y + "px";
 }
 
 
-// 💕 HEART ANIMATION
+// 💍 Drag Female Hand
+let dragging=false, offsetX=0;
+
+femaleHand.addEventListener("mousedown",(e)=>{
+  dragging=true;
+  offsetX = e.clientX - femaleHand.offsetLeft;
+});
+
+document.addEventListener("mousemove",(e)=>{
+  if(!dragging) return;
+  let x = e.clientX - offsetX;
+  keepInside(x);
+  checkCollision();
+});
+
+document.addEventListener("mouseup",()=>dragging=false);
+
+// Touch support
+femaleHand.addEventListener("touchstart",(e)=>{
+  dragging=true;
+  offsetX = e.touches[0].clientX - femaleHand.offsetLeft;
+});
+
+document.addEventListener("touchmove",(e)=>{
+  if(!dragging) return;
+  let x = e.touches[0].clientX - offsetX;
+  keepInside(x);
+  checkCollision();
+  e.preventDefault();
+},{passive:false});
+
+document.addEventListener("touchend",()=>dragging=false);
+
+function keepInside(x){
+  const maxX = engagementArea.clientWidth - femaleHand.offsetWidth;
+  x = Math.max(0, Math.min(x,maxX));
+  femaleHand.style.left = x + "px";
+}
+
+function checkCollision(){
+  const f = femaleHand.getBoundingClientRect();
+  const m = maleHand.getBoundingClientRect();
+
+  if(!(f.right < m.left || 
+       f.left > m.right || 
+       f.bottom < m.top || 
+       f.top > m.bottom)){
+
+    // 💖 Small dramatic effect before redirect
+    femaleHand.style.transform = "translateY(-50%) scale(1.1)";
+    setTimeout(()=>{
+      window.location.href = "love.html";
+    }, 600);
+  }
+}
+
+
+// 💕 Floating hearts
 function heart(){
  const h=document.createElement("div");
  h.className="heart";
@@ -185,7 +278,6 @@ function heart(){
  document.body.appendChild(h);
  setTimeout(()=>h.remove(),6000);
 }
-
 setInterval(heart,250);
 
 });
